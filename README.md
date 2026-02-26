@@ -75,10 +75,10 @@ pip install -r requirements.txt
 框架成熟后，你可以直接在独立脚本中引入 `core` 或 `utils` 中的模块（以下为规划中的接口示例）：
 
 ```python
-# 示例：引入学术可视化工具（utils 模块开发中）
+# 引入学术可视化工具（utils 模块开发中）
 # from utils.visualization import plot_academic_style
 
-# 示例：引入时序预测基类（core 模块开发中）
+# 引入时序预测基类（core 模块开发中）
 # from core.time_series import BasePredictor
 
 
