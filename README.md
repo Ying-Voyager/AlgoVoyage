@@ -81,7 +81,7 @@ pip install -r requirements.txt
 # 示例：引入时序预测基类（core 模块开发中）
 # from core.time_series import BasePredictor
 
-# 你的业务代码...
+
 ```
 
 若要复现某个竞赛子项目的完整结果，进入对应子目录后直接运行目标脚本即可，例如：
