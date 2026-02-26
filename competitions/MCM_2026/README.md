@@ -115,8 +115,8 @@ python Q4_Parameter_Sensitivity_Analysis.py
 
 ## 👥 作者与致谢
 
-- 🧮 **建模与分析**: Zhao Yao
 - 💻 **编程实现**: Ying Qichi
+- 🧮 **建模与分析**: Zhao Yao
 - 📝 **论文撰写**: Li Zhicong
 - 🏷️ **队伍编号**: Team 2602906
 
