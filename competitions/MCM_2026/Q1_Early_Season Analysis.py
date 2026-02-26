@@ -751,7 +751,7 @@ def main():
     os.makedirs(output_dir, exist_ok=True)
     print(f"\nOutput directory: {os.path.abspath(output_dir)}\n")
 
-    filepath = r'C:\Users\tx\AppData\Roaming\Kingsoft\office6\templates\wps\zh_CN\2026_MCM_Problem_C_Data.csv'
+    filepath = '2026_MCM_Problem_C_Data.csv'
 
     if not os.path.exists(filepath):
         print(f"ERROR: Data file not found at {filepath}")

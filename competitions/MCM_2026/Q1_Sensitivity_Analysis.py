@@ -367,7 +367,7 @@ def main():
     print("=" * 70)
 
     # Load data
-    filepath = r'C:\Users\tx\AppData\Roaming\Kingsoft\office6\templates\wps\zh_CN\2026_MCM_Problem_C_Data.csv'
+    filepath = '2026_MCM_Problem_C_Data.csv'
     df = pd.read_csv(filepath)
 
     print("\nLoading Season 27 Week 8 data...")

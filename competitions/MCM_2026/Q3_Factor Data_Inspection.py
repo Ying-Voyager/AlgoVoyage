@@ -8,7 +8,7 @@ pd.set_option('display.width', 1000)
 
 def inspect_data():
     # 你的本地绝对路径 (使用 r'' 防止反斜杠转义)
-    file_path = r'E:\PycharmProjects\PythonProject\2026美赛\2026_MCM_Problem_C_Data.csv'
+    file_path = '2026_MCM_Problem_C_Data.csv'
 
     print(f"正在读取文件: {file_path} ...")
 

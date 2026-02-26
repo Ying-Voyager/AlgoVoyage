@@ -709,7 +709,7 @@ def main():
     print("  2. Fan support (popularity beyond skill)")
 
     # Load data
-    filepath = r'C:\Users\tx\AppData\Roaming\Kingsoft\office6\templates\wps\zh_CN\2026_MCM_Problem_C_Data.csv'
+    filepath = '2026_MCM_Problem_C_Data.csv'
     df = load_data(filepath)
 
     # Feature engineering
