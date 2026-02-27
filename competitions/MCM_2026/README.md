@@ -3,7 +3,7 @@
 
 ![Python](https://img.shields.io/badge/Python-3.12-blue.svg)
 ![Status](https://img.shields.io/badge/Status-Results_Pending-orange.svg)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
+![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)
 
 ## 📝 项目简介
 
@@ -126,4 +126,10 @@ python Q4_Parameter_Sensitivity_Analysis.py
 
 ## 📄 许可证
 
-MIT License © 2026 Team 2602906
+本项目采用 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/deed.zh) 协议授权。
+
+你可以自由地**分享**和**改编**本项目内容，但须遵守以下条件：
+- **署名**：必须注明原作者（Team 2602906）及出处
+- **非商业性使用**：禁止将本项目内容用于任何商业目的，包括但不限于销售、代写、卖课等行为
+
+© 2026 Team 2602906
