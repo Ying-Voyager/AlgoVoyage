@@ -63,7 +63,7 @@ MPW_Simulation_LSDYNA/
                                如需网格文件，请通过 Issues 联系作者。
 ```
 
-> **关于 `mesh.k`：** 网格文件包含线圈、场形器和飞管的完整三维六面体有限元离散，由 LS-PrePost 生成，目前不开源。缺少此文件求解器将无法运行。请参阅[第 6 节](#6-网格文件meshk不开源)获取足以重建兼容网格的几何与网格划分信息。
+> **关于 `mesh.k`：** 网格文件包含线圈、场形器和飞管的完整三维六面体有限元离散，由 HyperMesh 2022 生成，目前不开源。缺少此文件求解器将无法运行。请参阅[第 6 节](#6-网格文件meshk不开源)获取足以重建兼容网格的几何与网格划分信息。
 
 ---
 
@@ -544,7 +544,7 @@ MPW_Simulation_LSDYNA/
                                Contact the authors for access to the mesh.
 ```
 
-> **Note on `mesh.k`:** The mesh file contains the complete 3D hexahedral finite element discretization of the coil, field shaper, and flyer tube, generated in LS-PrePost. It is not open-sourced at this time. The solver will not run without it. Please refer to [Section 6](#6-mesh-file-meshk-not-distributed) for geometry and meshing details sufficient to reconstruct a compatible mesh.
+> **Note on `mesh.k`:** The mesh file contains the complete 3D hexahedral finite element discretization of the coil, field shaper, and flyer tube, generated in HyperMesh 2022. It is not open-sourced at this time. The solver will not run without it. Please refer to [Section 6](#6-mesh-file-meshk-not-distributed) for geometry and meshing details sufficient to reconstruct a compatible mesh.
 
 ---
 
