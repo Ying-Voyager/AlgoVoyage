@@ -27,6 +27,11 @@
 
 本项目是一套基于 **STM32G031G8Ux** 微控制器的 **四驱仿生蝴蝶** 飞行控制系统，实现了对四片翅膀的独立闭环位置控制。相比双驱版本，四驱方案为每片翅膀配备独立电机与磁编码器，大幅提升了左右前后翅的协调性与飞行稳定性。
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a1a48257-1a05-4f87-b83e-029d880d7a55" width="49%" />
+  <img src="https://github.com/user-attachments/assets/9dc41d85-963c-4eae-aa8e-f227d0cc1621" width="49%" />
+</p>
+
 **核心特性：**
 
 - 4 路电机独立位置闭环 PID 控制
