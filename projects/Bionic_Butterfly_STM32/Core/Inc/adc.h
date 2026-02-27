@@ -40,9 +40,6 @@ extern DMA_HandleTypeDef hdma_adc1;
 
 void MX_ADC1_Init(void);
 
-/* USER CODE BEGIN Prototypes */
-
-/* USER CODE END Prototypes */
 
 #ifdef __cplusplus
 }
