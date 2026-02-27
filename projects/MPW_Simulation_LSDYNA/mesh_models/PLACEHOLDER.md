@@ -7,7 +7,7 @@
 
 ## 为何 `mesh.k` 不在此处？
 
-`mesh.k` 是本仿真项目的核心几何与离散化资产，由 LS-PrePost v4.10.8 生成，文件体积约 **48 MB**，包含以下内容：
+`mesh.k` 是本仿真项目的核心几何与离散化资产，由 HyperMesh 2022 生成，文件体积约 **48 MB**，包含以下内容：
 
 - 线圈、集磁器（Field Shaper）与铝飞管的完整三维**六面体结构化网格拓扑**
 - 焊接作用区采用 **1 mm 精细网格**、非关键区域采用 **2 mm 粗化网格**的局部自适应加密策略
@@ -64,7 +64,7 @@
 
 ## Why Is `mesh.k` Not Here?
 
-`mesh.k` is the core geometric and discretization asset of this simulation project, generated with LS-PrePost v4.10.8. The file is approximately **48 MB** in size and contains the following:
+`mesh.k` is the core geometric and discretization asset of this simulation project, generated with HyperMesh 2022 The file is approximately **48 MB** in size and contains the following:
 
 - Complete 3D **structured hexahedral mesh topology** for the coil, field shaper, and aluminum flyer tube
 - A locally adaptive refinement strategy: **1 mm fine mesh** in the welding zone and **2 mm coarse mesh** in non-critical regions
