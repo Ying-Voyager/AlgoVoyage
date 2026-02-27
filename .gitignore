@@ -65,8 +65,8 @@ __pycache__/
 *.uvguix.*
 *.uvoptx
 
-# Keil 自动生成的输出目录
-*/MDK-ARM/fly/
-*/MDK-ARM/Objects/
-*/MDK-ARM/Listings/
-*/MDK-ARM/DebugConfig/
+# Keil 自动生成的输出目录（** 匹配任意深度路径）
+**/MDK-ARM/fly/
+**/MDK-ARM/Objects/
+**/MDK-ARM/Listings/
+**/MDK-ARM/DebugConfig/

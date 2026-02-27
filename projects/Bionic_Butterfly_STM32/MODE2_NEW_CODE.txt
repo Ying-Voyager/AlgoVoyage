@@ -1,0 +1,135 @@
+        // ======== Mode 2: 飞行模式 - 前后翼独立频率控制 ========
+        if (elrs_data.Mode == 2)
+        {
+			motor_1_pid.Kp = 30;
+			motor_2_pid.Kp = 30;
+			motor_3_pid.Kp = 30;
+			motor_4_pid.Kp = 30;
+			
+			// 遥控器通道映射
+			// elrs_data.Throttle  -> 整体频率 (通道3, 左摇杆Y)  范围: 5~15Hz
+			// elrs_data.Yaw       -> 前后频率差 (通道1, 左摇杆X)  范围: -400~400
+			// elrs_data.midpoint  -> 整体幅度 (通道2, 右摇杆Y)  范围: -80~80
+			// elrs_data.Roll      -> 左右幅度差 (通道4, 右摇杆X)  范围: -400~400
+			
+			// 计算基准角度
+			const int16_t front_base = motor_Front_midpoint;
+			const int16_t rear_base  = motor_Rear_midpoint;
+			
+			// ============ 幅度控制算法（左右差速转向）============
+			// Step1: Y轴控制中心幅度 (90~150)
+			int16_t center_amp = 90 + ((elrs_data.midpoint + 80) * 60) / 160;
+			if (center_amp < 90) center_amp = 90;
+			if (center_amp > 150) center_amp = 150;
+			
+			// Step2: X轴控制左右差值 (-30~+30度)
+			int16_t diff = (elrs_data.Roll * 30) / 400;
+			
+			// Step3: 计算左右幅度
+			int16_t amp_L = center_amp + diff;
+			int16_t amp_R = center_amp - diff;
+			
+			// Step4: 硬限制在90~150范围内
+			if (amp_L < 90) amp_L = 90;
+			if (amp_L > 150) amp_L = 150;
+			if (amp_R < 90) amp_R = 90;
+			if (amp_R > 150) amp_R = 150;
+			
+			// Step5: 转换为编码器单位
+			const int16_t amp_L_encoder = (amp_L * 1138) / 100;
+			const int16_t amp_R_encoder = (amp_R * 1138) / 100;
+			
+			// ============ 频率控制算法（前后差速俯仰）============
+			// Step1: 左摇杆Y控制整体频率 (5~15Hz)
+			int16_t base_freq = (int16_t)elrs_data.Throttle;
+			if (base_freq < 5) base_freq = 5;
+			if (base_freq > 15) base_freq = 15;
+			
+			// Step2: 左摇杆X控制前后频率差 (-3~+3Hz)
+			// Yaw: -400(left/down) ~ 0 ~ +400(right/up)
+			int16_t freq_diff = (elrs_data.Yaw * 3) / 400;
+			
+			// Step3: 计算前后翼频率
+			int16_t freq_front = base_freq + freq_diff;  // 前翼频率
+			int16_t freq_rear = base_freq - freq_diff;   // 后翼频率
+			
+			// Step4: 硬限制在5~15Hz范围内
+			if (freq_front < 5) freq_front = 5;
+			if (freq_front > 15) freq_front = 15;
+			if (freq_rear < 5) freq_rear = 5;
+			if (freq_rear > 15) freq_rear = 15;
+			
+			// ============ 前后翼独立状态机 ============
+			// 前翼状态机
+			static uint8_t  sm_idx_front = 0;
+			static int8_t   sm_dir_front = 1;
+			static uint32_t sm_next_tick_front = 0;
+			
+			// 后翼状态机
+			static uint8_t  sm_idx_rear = 0;
+			static int8_t   sm_dir_rear = 1;
+			static uint32_t sm_next_tick_rear = 0;
+			
+			// 计算前后翼的步进时间
+			const uint32_t STEPS = 18U;
+			uint32_t step_ms_front = (5000U + (STEPS*freq_front/2U)) / (STEPS * freq_front);
+			uint32_t step_ms_rear = (5000U + (STEPS*freq_rear/2U)) / (STEPS * freq_rear);
+			if (step_ms_front == 0) step_ms_front = 1;
+			if (step_ms_rear == 0) step_ms_rear = 1;
+			
+			uint32_t tick = HAL_GetTick();
+			
+			// ====== 前翼状态机推进 ======
+			if ((int32_t)(tick - sm_next_tick_front) >= 0)
+			{
+				int16_t c_front = COS_Q15_9[sm_idx_front];
+				
+				// 前翼目标角度
+				Wings_Data.Wings_motor[0].Target_Angle = (int16_t)(front_base - q15_mul(amp_L_encoder, c_front));
+				Wings_Data.Wings_motor[1].Target_Angle = (int16_t)(front_base - q15_mul(amp_R_encoder, c_front));
+				
+				// 安排下一次步进
+				sm_next_tick_front += step_ms_front;
+				
+				// 更新索引与方向
+				if (sm_dir_front > 0) {
+					if (++sm_idx_front >= 8) { sm_idx_front = 8; sm_dir_front = -1; }
+				} else {
+					if (sm_idx_front-- == 0) { sm_idx_front = 0; sm_dir_front = +1; }
+				}
+			}
+			
+			// ====== 后翼状态机推进 ======
+			if ((int32_t)(tick - sm_next_tick_rear) >= 0)
+			{
+				// 后翼考虑相位差
+				int8_t rear_idx;
+				if (sm_dir_rear > 0) {
+					rear_idx = (int8_t)(sm_idx_rear - phase_offset);
+					if (rear_idx < 0) rear_idx = 0;
+				} else {
+					rear_idx = (int8_t)(sm_idx_rear + phase_offset);
+					if (rear_idx > 8) rear_idx = 8;
+				}
+				int16_t c_rear = COS_Q15_9[rear_idx];
+				
+				// 后翼目标角度
+				Wings_Data.Wings_motor[2].Target_Angle = (int16_t)(rear_base - q15_mul(amp_L_encoder, c_rear));
+				Wings_Data.Wings_motor[3].Target_Angle = (int16_t)(rear_base - q15_mul(amp_R_encoder, c_rear));
+				
+				// 安排下一次步进
+				sm_next_tick_rear += step_ms_rear;
+				
+				// 更新索引与方向
+				if (sm_dir_rear > 0) {
+					if (++sm_idx_rear >= 8) { sm_idx_rear = 8; sm_dir_rear = -1; }
+				} else {
+					if (sm_idx_rear-- == 0) { sm_idx_rear = 0; sm_dir_rear = +1; }
+				}
+			}
+			
+			// 更新编码器角度
+			StarAndGetResult();
+			
+			Motor_PID_Control();
+        }
