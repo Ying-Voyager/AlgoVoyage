@@ -14,12 +14,11 @@
 
 ## 📂 目录结构说明
 
-本框架采用标准的工业级项目目录规范：
+本仓库当前包含以下三个主目录：
 
-* **`core/`**：**核心算法引擎**。沉淀经过验证的底层算法模块（如前沿时序预测模型、复杂动力学仿真逻辑、通用控制算法等），作为独立组件供其他模块调用。
-* **`utils/`**：**通用工具箱**。包含高频使用的辅助轮子（如统一的数据 I/O 接口、跨平台路径动态解析、Matplotlib 科研级可视化与 LaTeX 渲染引擎等）。
 * **`projects/`**：**学术科研与工程实践**。收录各项科研课题与工程落地的算法实现（覆盖智能装备、机构运动学仿真、数据驱动的工艺分析等方向）。
 * **`competitions/`**：**竞赛存档**。历次大型学科竞赛（含美赛 MCM 等）的实战代码库，每个赛事均保持独立的虚拟环境配置与数据流管控。
+* **`Elegant_ML_with_MATLAB/`**：**MATLAB 机器学习课程作业**。课程《优雅地使用 MATLAB 进行机器学习》的全部课后作业与期末项目，从基础语法到 SVM 分类、岭回归、Katz 链路预测的完整实现。
 
 ---
 
@@ -70,19 +69,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. 调用示例
-
-框架成熟后，你可以直接在独立脚本中引入 `core` 或 `utils` 中的模块（以下为规划中的接口示例）：
-
-```python
-# 引入学术可视化工具（utils 模块开发中）
-# from utils.visualization import plot_academic_style
-
-# 引入时序预测基类（core 模块开发中）
-# from core.time_series import BasePredictor
-
-
-```
+### 3. 运行示例
 
 若要复现某个竞赛子项目的完整结果，进入对应子目录后直接运行目标脚本即可，例如：
 
@@ -97,8 +84,11 @@ python Q4_Tanh_Saturation_Scoring.py
 
 ## 📊 项目路线图 (Roadmap)
 
-- [x] 建立模块化工程框架（`core` / `utils` / `projects` / `competitions`）
+- [x] 建立多方向工程仓库（`projects` / `competitions` / `Elegant_ML_with_MATLAB`）
 - [x] 完成 MCM 2026 全流程建模与仿真代码
+- [x] 开源仿生蝴蝶 STM32 四驱控制系统
+- [x] 开源凸轮压力角分析与最优偏距求解工具
+- [x] 开源 MATLAB 机器学习课程完整作业集
 
 
 ---
