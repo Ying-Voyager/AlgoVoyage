@@ -19,7 +19,7 @@ typedef struct {
         int16_t Speed;              // 电机转速：单位：RPM 或 度/秒，根据具体设计决定
         int16_t Target_Speed;       // 目标转速：单位：RPM 或 度/秒，根据具体设计决定
         int16_t Position;           // 电机累计位置：累积角度值，用于记录多圈运动
-    } Wings_motor[5];   // 支持多电机数组：[0]M1左前翼, [1]M3右前翼, [2]M2左后翼, [3]M4右后翼, [4]预留扩展电机;
+    } Wings_motor[5];   // 支持多电机数组：[0]M1左前(motor_1), [1]M3右前(motor_3), [2]M2左后(motor_2), [3]M4右后(motor_4), [4]预留;
     
 } WINGS_DATA;
 
@@ -29,29 +29,29 @@ extern pid_type_def motor_1_pid, motor_2_pid, motor_3_pid, motor_4_pid;
 #define KP 	20.0f
 #define KD  00.0f
 
-// 电机1 (M1 左前翼) PID参数
+// motor_1_pid (M1 左前翼) PID参数
 #define MOTOR_1_SPEED_PID_KP KP
 #define MOTOR_1_SPEED_PID_KI 0.0f
 #define MOTOR_1_SPEED_PID_KD KD
 
-// 电机2 (M2 左后翼) PID参数
+// motor_2_pid (M2 左后翼) PID参数
 #define MOTOR_2_SPEED_PID_KP KP
 #define MOTOR_2_SPEED_PID_KI 0.0f
 #define MOTOR_2_SPEED_PID_KD KD
 
-// 电机3 (M3 右前翼) PID参数
+// motor_3_pid (M3 右前翼) PID参数
 #define MOTOR_3_SPEED_PID_KP KP
 #define MOTOR_3_SPEED_PID_KI 0.0f
 #define MOTOR_3_SPEED_PID_KD KD
 
-// 电机4 (M4 右后翼) PID参数
+// motor_4_pid (M4 右后翼) PID参数
 #define MOTOR_4_SPEED_PID_KP KP
 #define MOTOR_4_SPEED_PID_KI 0.0f
 #define MOTOR_4_SPEED_PID_KD KD
 
 // 四驱电机布局
-// M1(左前)  M3(右前)   ← 电机1,3是前翼
-// M2(左后)  M4(右后)   ← 电机2,4是后翼
+// M1(左前)  M3(右前)   ← motor_1,3是前翼
+// M2(左后)  M4(右后)   ← motor_2,4是后翼
 
 /*-------------Motor_PWM_M1(左前翼)--------------*/
 #define PWM_M1_1 	  TIM2->CCR1	 // 电机1正转

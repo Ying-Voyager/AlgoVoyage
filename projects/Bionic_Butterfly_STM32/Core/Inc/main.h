@@ -73,11 +73,11 @@ void Error_Handler(void);
 #define PWM_M3_2_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-extern int motor_L_set;  // 左侧电机目标值（保留，暂未使用）
-extern int motor_R_set;  // 右侧电机目标值（保留，暂未使用）
-#define PI  3.14f
-float fastCos(float angle);
-float fastSin(float angle);
+extern int motor_L_set;          //?????????
+extern int motor_R_set;          //?????????
+#define PI		3.14
+float fastCos(float angle) ;
+float fastSin(float angle) ;
 float Angle_Convert_Radians(float Ang);
 /* USER CODE END Private defines */
 

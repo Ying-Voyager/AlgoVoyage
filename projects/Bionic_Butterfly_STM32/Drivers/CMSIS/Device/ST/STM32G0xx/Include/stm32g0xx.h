@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    stm32g0xx.h
-  * @author  Ying Qichi
+  * @author  MCD Application Team
   * @brief   CMSIS STM32G0xx Device Peripheral Access Layer Header File.
   *
   *          The file is the unique include file that the application programmer

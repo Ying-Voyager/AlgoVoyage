@@ -10,10 +10,10 @@
 // 电机布局：M1(左前) M3(右前)
 //           M2(左后) M4(右后)
 
-#define MOTOR1_MIDPOINT 1024      // 电机1 左前翼 1024零位角度值
-#define MOTOR2_MIDPOINT 1024     // 电机2 左后翼 1024零位角度值
-#define MOTOR3_MIDPOINT 1024     // 电机3 右前翼 1024零位角度值
-#define MOTOR4_MIDPOINT 1024     // 电机4 右后翼 1024零位角度值
+#define MOTOR1_MIDPOINT 1280      // M1左前翼 (motor_1_pid对应) 1280零位角度值
+#define MOTOR2_MIDPOINT 1280     // M2左后翼 (motor_2_pid对应) 1280零位角度值
+#define MOTOR3_MIDPOINT 1280     // M3右前翼 (motor_3_pid对应) 1280零位角度值
+#define MOTOR4_MIDPOINT 1280     // M4右后翼 (motor_4_pid对应) 1280零位角度值
 
 // ====== 零位校准说明 ======
 // 1. MOTOR1_MIDPOINT和MOTOR3_MIDPOINT是前翼（左右）

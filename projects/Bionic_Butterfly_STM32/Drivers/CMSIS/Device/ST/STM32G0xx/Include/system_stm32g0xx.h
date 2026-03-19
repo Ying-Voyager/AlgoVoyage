@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    system_stm32g0xx.h
-  * @author  Ying Qichi
+  * @author  MCD Application Team
   * @brief   CMSIS Cortex-M0+ Device System Source File for STM32G0xx devices.
   ******************************************************************************
   * @attention

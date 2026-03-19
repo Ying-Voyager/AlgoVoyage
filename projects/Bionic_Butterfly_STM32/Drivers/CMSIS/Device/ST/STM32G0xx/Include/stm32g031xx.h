@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    stm32g031xx.h
-  * @author  Ying Qichi
+  * @author  MCD Application Team
   * @brief   CMSIS Cortex-M0+ Device Peripheral Access Layer Header File.
   *          This file contains all the peripheral register's definitions, bits
   *          definitions and memory mapping for stm32g031xx devices.
