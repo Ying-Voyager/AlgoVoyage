@@ -86,7 +86,9 @@ python Q4_Tanh_Saturation_Scoring.py
 
 - [x] 建立多方向工程仓库（`projects` / `competitions` / `Elegant_ML_with_MATLAB`）
 - [x] 完成 MCM 2026 全流程建模与仿真代码
+- [x] 完成 CUMCM 2025 全流程建模与仿真代码
 - [x] 开源仿生蝴蝶 STM32 四驱控制系统
+- [x] 开源 LS-DYNA 磁脉冲焊接多物理场仿真项目（MPW）
 - [x] 开源凸轮压力角分析与最优偏距求解工具
 - [x] 开源 MATLAB 机器学习课程完整作业集
 
