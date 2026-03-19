@@ -39,7 +39,7 @@
   <img src="https://github.com/user-attachments/assets/f59be35e-2f90-48c3-af24-f8c393f5b5b7" width="49%" />
 </p>
 
-<p align="center"><b>四驱飞行演示</b></p>
+<p align="center"><b>四驱控制演示</b></p>
 <p align="center">
   <video src="https://github.com/user-attachments/assets/69d53cbd-6051-4aee-be7b-ad71188ee032" width="80%" muted autoplay loop controls></video>
 </p>
