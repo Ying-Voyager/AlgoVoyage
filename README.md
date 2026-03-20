@@ -4,6 +4,8 @@
 ![Architecture](https://img.shields.io/badge/Architecture-Modular-success.svg)
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen.svg)
 
+> **作者：** 应岂池 (Ying Qichi)
+
 ## 📖 项目简介
 
 **AlgoVoyage** 是用于沉淀个人核心算法、存放顶级数学建模竞赛（如 MCM/ICM）代码以及学术科研项目仿真的综合性工程库。
