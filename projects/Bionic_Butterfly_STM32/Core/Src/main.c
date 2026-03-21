@@ -58,17 +58,17 @@
 
 // ----- Mode1: 立翅基准点（竖直向上，约90度）-----
 // 用于静态立翅模式，翅膀竖直向上
-int16_t motor_LF_standing = 1444;  // 左前翼立翅位置
-int16_t motor_RF_standing = 3244;  // 右前翼立翅位置
-int16_t motor_LR_standing = 3144;  // 左后翼立翅位置
-int16_t motor_RR_standing = 1344;  // 右后翼立翅位置
+int16_t motor_LF_standing = 1144;  // 左前翼立翅位置
+int16_t motor_RF_standing = 3294;  // 右前翼立翅位置
+int16_t motor_LR_standing = 3394;  // 左后翼立翅位置
+int16_t motor_RR_standing = 1194;  // 右后翼立翅位置
 
 // ----- Mode2: 扑翼基准点（水平，约0度）-----
 // 用于飞行模式的扑翼中心，翅膀水平位置
 int16_t motor_LF_flying = 2144;    // 左前翼扑翼中心
-int16_t motor_RF_flying = 2344;    // 右前翼扑翼中心
-int16_t motor_LR_flying = 2444;    // 左后翼扑翼中心
-int16_t motor_RR_flying = 2544;    // 右后翼扑翼中心
+int16_t motor_RF_flying = 2294;    // 右前翼扑翼中心
+int16_t motor_LR_flying = 2394;    // 左后翼扑翼中心
+int16_t motor_RR_flying = 2294;    // 右后翼扑翼中心
 
 // ----- Mode0: 收翅基准点（收起，约45度）-----
 // 用于收翅模式，翅膀收起贴近身体
@@ -87,11 +87,11 @@ int16_t motor_RR_folded = 1944;    // 右后翼收翅位置
 //           M2(左后) M4(右后)
 // ========================================
 
-// 前后翼相位差设置（单位：cos表索引，范围：0-8）
+// 前后翼相位差设置（单位：cos表索引，范围：0-16）
 // 0 = 无相位差（同步）
-// 2 = 后翼落后约40度（默认）
-// 4 = 后翼落后约80度
-int8_t phase_offset = 2;
+// 4 = 后翼落后约40度（默认，由于余弦表加倍，值也加倍）
+// 8 = 后翼落后约80度
+int8_t phase_offset = 4;
 
 // Mode2扑翼开关状态（使用拨杆8控制）
 static uint8_t mode2_flapping = 0;  // 0=悬停在水平位置, 1=正在扑翼
@@ -195,11 +195,26 @@ static inline uint16_t abs16_fast(int16_t x) {
     return (uint16_t)((x ^ m) - m); // 等价于 abs(x)
 }
 
-// ====== 定点余弦表（Q15），9 点 ======
-static const int16_t COS_Q15_9[9] = {
-    30784, 25133,  16384,
-    11207,     0, -11207,
-   -16384,-25133,-30784
+// ====== 定点余弦表（Q15），17 点 ======
+// 角度分辨率: 11.25° (从22.5°提升，平滑度提升约50%)
+static const int16_t COS_Q15_17[17] = {
+    32767,  // 0.0°
+    30784,  // 11.25°
+    27246,  // 22.5°
+    22446,  // 33.75°
+    16384,  // 45.0°
+    9630,   // 56.25°
+    2896,   // 67.5°
+    -3935,  // 78.75°
+    -11207, // 90.0°
+    -17547, // 101.25°
+    -22446, // 112.5°
+    -25845, // 123.75°
+    -27246, // 135.0°
+    -26509, // 146.25°
+    -23170, // 157.5°
+    -17806, // 168.75°
+    -11207  // 180.0°
 };
 
 // Q15 乘法： (a * b) >> 15
@@ -471,7 +486,8 @@ int main(void)
 			static uint32_t sm_next_tick_rear = 0;
 			
 			// 计算前后翼的步进时间
-			const uint32_t STEPS = 18U;
+			// 17点余弦表 × 2方向 = 34步（从18步提升，平滑度翻倍）
+			const uint32_t STEPS = 34U;
 			uint32_t step_ms_front = (5000U + (STEPS*freq_front/2U)) / (STEPS * freq_front);
 			uint32_t step_ms_rear = (5000U + (STEPS*freq_rear/2U)) / (STEPS * freq_rear);
 			if (step_ms_front == 0) step_ms_front = 1;
@@ -482,7 +498,7 @@ int main(void)
 			// ====== 前翼状态机推进 ======
 			if ((int32_t)(tick - sm_next_tick_front) >= 0)
 			{
-				int16_t c_front = COS_Q15_9[sm_idx_front];
+				int16_t c_front = COS_Q15_17[sm_idx_front];
 				
 				// 前翼目标角度（使用方向系数自动适应）
         Wings_Data.Wings_motor[0].Target_Angle = (int16_t)(base_LF + motor_LF_direction * q15_mul(amp_L_encoder, c_front));  // 左前
@@ -493,7 +509,7 @@ int main(void)
 				
 				// 更新索引与方向
 				if (sm_dir_front > 0) {
-					if (++sm_idx_front >= 8) { sm_idx_front = 8; sm_dir_front = -1; }
+					if (++sm_idx_front >= 16) { sm_idx_front = 16; sm_dir_front = -1; }
 				} else {
 					if (sm_idx_front-- == 0) { sm_idx_front = 0; sm_dir_front = +1; }
 				}
@@ -509,9 +525,9 @@ int main(void)
 					if (rear_idx < 0) rear_idx = 0;
 				} else {
 					rear_idx = (int8_t)(sm_idx_rear + phase_offset);
-					if (rear_idx > 8) rear_idx = 8;
+					if (rear_idx > 16) rear_idx = 16;
 				}
-				int16_t c_rear = COS_Q15_9[rear_idx];
+				int16_t c_rear = COS_Q15_17[rear_idx];
 				
 				// 后翼目标角度（使用方向系数自动适应）
         Wings_Data.Wings_motor[2].Target_Angle = (int16_t)(base_LR + motor_LR_direction * q15_mul(amp_L_encoder, c_rear));  // 左后
@@ -522,7 +538,7 @@ int main(void)
 				
 				// 更新索引与方向
 				if (sm_dir_rear > 0) {
-					if (++sm_idx_rear >= 8) { sm_idx_rear = 8; sm_dir_rear = -1; }
+					if (++sm_idx_rear >= 16) { sm_idx_rear = 16; sm_dir_rear = -1; }
 				} else {
 					if (sm_idx_rear-- == 0) { sm_idx_rear = 0; sm_dir_rear = +1; }
 				}
