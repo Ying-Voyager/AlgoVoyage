@@ -14,8 +14,8 @@
   *
   * 遥控器通道映射:
   * - 通道1 (右摇杆X): 控制左右差速转向 (右推=左翼幅度大=右转)
-  * - 通道2 (右摇杆Y): 控制扑翼幅度 (上推=幅度增大, 范围:45~90度)
-  * - 通道3 (左摇杆Y): 控制扑翼频率 (上推=频率增大, 范围:5~15Hz)
+  * - 通道2 (右摇杆Y): 控制扑翼幅度 (上推=幅度增大, 范围:30~60度)
+  * - 通道3 (左摇杆Y): 控制扑翼频率 (上推=频率增大, 范围:10~20Hz)
   * - 通道4 (左摇杆X): 控制前后差速俯仰 (右推=前翼加速=抬头)
   * - 通道5 (拨杆F): 启动/停止开关 (上=启动, 下=停止)
   * - 通道6 (拨杆B): 模式选择 (上=Mode2扑翼, 中=Mode1立翅, 下=Mode0收翅)
@@ -91,7 +91,7 @@ int16_t motor_RR_folded = 1944;    // 右后翼收翅位置
 // 0 = 无相位差（同步）
 // 4 = 后翼落后约40度（默认，由于余弦表加倍，值也加倍）
 // 8 = 后翼落后约80度
-int8_t phase_offset = 4;
+int8_t phase_offset = 2;
 
 // Mode2扑翼开关状态（使用拨杆8控制）
 static uint8_t mode2_flapping = 0;  // 0=悬停在水平位置, 1=正在扑翼
@@ -345,10 +345,10 @@ int main(void)
         motor_3_pid.Kp = 20;
         motor_4_pid.Kp = 20;
 		
-		motor_1_pid.Kd = 3;
-		motor_2_pid.Kd = 3;
-		motor_3_pid.Kd = 3;
-		motor_4_pid.Kd = 3;
+		motor_1_pid.Kd = 1.5;
+		motor_2_pid.Kd = 1.5;
+		motor_3_pid.Kd = 1.5;
+		motor_4_pid.Kd = 1.5;
 			
 			// 计算基准角度（使用扫翅基准点）
 			// 4个电机使用各自的flying基准点
@@ -364,13 +364,20 @@ int main(void)
 			{
 				// 拨杆8翻转，切换扫翅状态
 				mode2_flapping = !mode2_flapping;
+				
+
 			}
 			last_arm_state = elrs_data.Arm;
 			
 			// ============ 根据扫翅开关决定行为 ============
+			// 状态跟踪标志（在Mode2外层）
+			static uint8_t prev_flapping_state = 0;
+			
 			if (mode2_flapping == 0)
 			{
 				// ====== 状态1: 悬停在水平位置 ======
+				prev_flapping_state = 0;  // 记录悬停状态
+				
 				// 缓慢移动并保持在水平位置
 				static uint32_t hover_last_time = 0;
 				const uint32_t HOVER_INTERVAL = 5;  // 5ms更新一次
@@ -423,31 +430,37 @@ int main(void)
 			else
 			{
 				// ====== 状态2: 正常扑翼 ======
+				// 检测是否从悬停切换过来
+				if (prev_flapping_state == 0) {
+					// 刚从悬停切换来，需要重新初始化
+					// 注：sm_initialized在下面定义，这里先记录状态
+				}
+				prev_flapping_state = 1;  // 记录扑翼状态
 			
 			// 遥控器通道映射
-			// elrs_data.Throttle  -> 整体频率 (通道3, 左摇杆Y)  范围: 5~15Hz
+			// elrs_data.Throttle  -> 整体频率 (通道3, 左摇杆Y)  范围: 10~20Hz
 			// elrs_data.Yaw       -> 前后频率差 (通道4, 左摇杆X)  范围: ±2Hz
-			// elrs_data.midpoint  -> 整体幅度 (通道2, 右摇杆Y)  范围: 45~90度
+			// elrs_data.midpoint  -> 整体幅度 (通道2, 右摇杆Y)  范围: 30~60度
 			// elrs_data.Roll      -> 左右幅度差 (通道1, 右摇杆X)  范围: ±25度
 			
 
 			// ============ 幅度控制算法（左右差速转向）============
-			// Step1: Y轴控制中心幅度 (45~90度)
-			int16_t center_amp = 45 + ((elrs_data.midpoint + 80) * 45) / 160;
-      if (center_amp < 45) center_amp = 45;
+			// Step1: Y轴控制中心幅度 (30~60度)
+			int16_t center_amp = 60 + ((elrs_data.midpoint + 80) * 30) / 160;
+      if (center_amp < 60) center_amp = 60;
       if (center_amp > 90) center_amp = 90;
 			
-			// Step2: X轴控制左右差值 (-25~+25度)
-			int16_t diff = (elrs_data.Roll * 25) / 400;
+			// Step2: X轴控制左右差值 (-15~+15度)
+			int16_t diff = (elrs_data.Roll * 15) / 400;
 			
 			// Step3: 计算左右幅度
 			int16_t amp_L = center_amp + diff;
 			int16_t amp_R = center_amp - diff;
 			
-			// Step4: 硬限制在40~95度范围内
-			if (amp_L < 40) amp_L = 40;
+			// Step4: 硬限制在25~65度范围内
+			if (amp_L < 55) amp_L = 55;
 			if (amp_L > 95) amp_L = 95;
-			if (amp_R < 40) amp_R = 40;
+			if (amp_R < 55) amp_R = 55;
 			if (amp_R > 95) amp_R = 95;
 			
 			// Step5: 转换为编码器单位
@@ -455,10 +468,10 @@ int main(void)
 			const int16_t amp_R_encoder = (amp_R * 1138) / 100;
 			
 			// ============ 频率控制算法（前后差速俯仰）============
-			// Step1: 左摇杆Y控制整体频率 (5~15Hz)
+			// Step1: 左摇杆Y控制整体频率 (30~40Hz, 中心=35Hz)
 			int16_t base_freq = (int16_t)elrs_data.Throttle;
-			if (base_freq < 5) base_freq = 5;
-			if (base_freq > 15) base_freq = 15;
+			if (base_freq < 30) base_freq = 30;
+			if (base_freq > 40) base_freq = 40;
 			
 			// Step2: 左摇杆X控制前后频率差 (-2~+2Hz)
 			// Yaw: -100(left/down) ~ 0 ~ +100(right/up)
@@ -468,22 +481,66 @@ int main(void)
 			int16_t freq_front = base_freq + freq_diff;  // 前翼频率
 			int16_t freq_rear = base_freq - freq_diff;   // 后翼频率
 			
-			// Step4: 硬限制在3~17Hz范围内
-			if (freq_front < 3) freq_front = 3;
-			if (freq_front > 17) freq_front = 17;
-			if (freq_rear < 3) freq_rear = 3;
-			if (freq_rear > 17) freq_rear = 17;
+			// Step4: 硬限制在28~42Hz范围内
+			if (freq_front < 28) freq_front = 28;
+			if (freq_front > 42) freq_front = 42;
+			if (freq_rear < 28) freq_rear = 28;
+			if (freq_rear > 42) freq_rear = 42;
 			
 			// ============ 前后翼独立状态机 ============
 			// 前翼状态机
 			static uint8_t  sm_idx_front = 0;
 			static int8_t   sm_dir_front = 1;
 			static uint32_t sm_next_tick_front = 0;
+			static uint8_t  sm_initialized = 0;  // 智能启动标志
 			
 			// 后翼状态机
 			static uint8_t  sm_idx_rear = 0;
 			static int8_t   sm_dir_rear = 1;
 			static uint32_t sm_next_tick_rear = 0;
+			
+			// 检测是否从悬停切换过来，如是则重置
+			if (prev_flapping_state == 0) {
+				sm_initialized = 0;  // 重置标志，强制重新初始化
+			}
+			
+			// ============ 智能启动：根据当前位置开始 ============
+			if (sm_initialized == 0) {
+				// 读取当前翅膀位置
+				int16_t current_LF = Wings_Data.Wings_motor[0].Corrective_Angle;
+				int16_t current_RF = Wings_Data.Wings_motor[1].Corrective_Angle;
+				
+				// 计算前翼平均偏离水平的距离
+				int16_t avg_offset = ((current_LF - base_LF) + (current_RF - base_RF)) / 2;
+				
+				// 根据实际位置设置初始索引（智能判断）
+				if (abs16_fast(avg_offset) < 200) {
+					// 接近水平（±17度）
+					sm_idx_front = 8;
+					sm_idx_rear = 8;
+					sm_dir_front = 1;  // 向下
+					sm_dir_rear = 1;
+				} else if (avg_offset < -200) {
+					// 偏上方
+					sm_idx_front = 4;
+					sm_idx_rear = 4;
+					sm_dir_front = 1;  // 向下
+					sm_dir_rear = 1;
+				} else {
+					// 偏下方
+					sm_idx_front = 12;
+					sm_idx_rear = 12;
+					sm_dir_front = -1;  // 向上
+					sm_dir_rear = -1;
+				}
+				
+				// 初始化next_tick为当前时间
+				uint32_t current_tick = HAL_GetTick();
+				sm_next_tick_front = current_tick;
+				sm_next_tick_rear = current_tick;
+				
+				sm_initialized = 1;  // 标记已初始化
+			}
 			
 			// 计算前后翼的步进时间
 			// 17点余弦表 × 2方向 = 34步（从18步提升，平滑度翻倍）
@@ -600,14 +657,8 @@ int main(void)
 				}
 				Wings_Data.Wings_motor[2].Target_Angle = current_LR;
 				
-				// 右后翼平滑移动
-				int16_t current_RR = Wings_Data.Wings_motor[3].Corrective_Angle;
-				if (current_RR < target_RR) {
-					current_RR += MIN(MAX_STEP, target_RR - current_RR);
-				} else if (current_RR > target_RR) {
-					current_RR -= MIN(MAX_STEP, current_RR - target_RR);
-				}
-				Wings_Data.Wings_motor[3].Target_Angle = current_RR;
+				// 右后翼直接设置（修复无法移动问题）
+				Wings_Data.Wings_motor[3].Target_Angle = target_RR;
 				
 				last_smooth_time = now;
 			}
@@ -664,14 +715,8 @@ int main(void)
 				}
 				Wings_Data.Wings_motor[2].Target_Angle = current_LR;
 				
-				// 右后翼平滑移动
-				int16_t current_RR = Wings_Data.Wings_motor[3].Corrective_Angle;
-				if (current_RR < target_RR) {
-					current_RR += MIN(MAX_STEP, target_RR - current_RR);
-				} else if (current_RR > target_RR) {
-					current_RR -= MIN(MAX_STEP, current_RR - target_RR);
-				}
-				Wings_Data.Wings_motor[3].Target_Angle = current_RR;
+				// 右后翼直接设置（修复无法移动问题）
+				Wings_Data.Wings_motor[3].Target_Angle = target_RR;
 				
 				last_smooth_time_mode0 = now;
 			}
